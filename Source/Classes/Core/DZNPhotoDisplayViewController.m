@@ -550,17 +550,19 @@ Returns the custom collection view layout.
                                                               options:SDWebImageCacheMemoryOnly|SDWebImageRetryFailed
                                                              progress:NULL
                                                             completed:^(UIImage *image, NSData *data, NSError *error, BOOL finished){
-                                                                if (image) {
-                                                                    
-                                                                    NSDictionary *userInfo = @{UIImagePickerControllerOriginalImage: image};
-                                                                    [metadata postMetadataUpdate:userInfo];
-                                                                }
-                                                                else {
-                                                                    [self setLoadingError:error];
-                                                                }
-                                                                
-                                                                [hud hide:YES];
-                                                                [self setActivityIndicatorsVisible:NO];
+                                                                dispatch_async(dispatch_get_main_queue(), ^{
+                                                                    if (image) {
+
+                                                                        NSDictionary *userInfo = @{UIImagePickerControllerOriginalImage: image};
+                                                                        [metadata postMetadataUpdate:userInfo];
+                                                                    }
+                                                                    else {
+                                                                        [self setLoadingError:error];
+                                                                    }
+
+                                                                    [hud hide:YES];
+                                                                    [self setActivityIndicatorsVisible:NO];
+                                                                });
                                                             }];
     }
     
